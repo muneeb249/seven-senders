@@ -58,7 +58,7 @@ public class WebcomicServiceImpl implements WebcomService {
      * @return
      * @throws IOException
      */
-    private List<Comic> fetchRecentComics(int num, Comic comic) throws IOException{
+    private List<Comic> fetchRecentComics(int num, Comic comic) throws IOException {
         List<Comic> comics = new ArrayList<>();
         comics.add(comic);
 

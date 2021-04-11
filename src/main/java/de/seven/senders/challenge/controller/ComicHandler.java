@@ -28,7 +28,15 @@ public class ComicHandler {
     ComicService comicService;
 
     public Mono<ServerResponse> getComics(ServerRequest serverRequest) {
-        return null;
+        try {
+            logger.info("URL invoked" + serverRequest.uri());
+            return ServerResponse.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(comicService.getAndSortComics(), Comic.class);
+        } catch (IOException | FeedException ex) {
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
+                    .body(ex.getMessage(), String.class);
+        }
 
     }
 
