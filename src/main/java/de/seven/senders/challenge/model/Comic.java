@@ -57,6 +57,28 @@ public class Comic {
         this.publishingDate = publishingDate;
     }
 
+    /**
+     * This method will parse the json along with uri to create the Comic Object
+     * @param json
+     * @param uri
+     * @return
+     */
+    public static Comic parseJsonToComic(String json, String uri) {
+        JSONObject obj = new JSONObject(json);
+        int month = obj.getInt("month");
+        int date = obj.getInt("day");
+        int year = obj.getInt("year");
+        String imgUrl = obj.getString("img");
+        String title = obj.getString("title");
+
+        return new Comic(
+                imgUrl,
+                title,
+                uri,
+                LocalDate.of(year, month, date)
+        );
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
