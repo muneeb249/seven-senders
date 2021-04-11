@@ -74,7 +74,7 @@ Get started
 
 #### Prequisites
 * JDK 11
-* Apache Maven 3.5.xx
+* Apache Maven 3.6.xx
 * Java IDE (Intellij IDEA recommended)
 * Docker
 
