@@ -1,6 +1,8 @@
 package de.seven.senders.challenge.service;
 
 import de.seven.senders.challenge.client.HttpClientExecutor;
+import de.seven.senders.challenge.exception.ComicNumberException;
+import de.seven.senders.challenge.exception.ComicParseException;
 import de.seven.senders.challenge.model.Comic;
 import de.seven.senders.challenge.parser.ComicParser;
 import de.seven.senders.challenge.parser.NumberParser;
@@ -52,10 +54,10 @@ public class WebcomicServiceImpl implements WebcomService {
 
         var endpoint = URI.create(webcomicUrl + "/" + webcomPrefix);
         String responseBody = httpClientExecutor.execute(Request.Get(endpoint));
-        int latestComicNumber = Stream.of(responseBody).map(numberParser).findFirst().get();
-
+        var latestComicNumber = Stream.of(responseBody).map(numberParser).findAny();
         var comic = Stream.of(responseBody + ":URL:" + endpoint.toString()).map(comicParser).findFirst().get();
-        return fetchRecentComics(latestComicNumber, comic);
+        return fetchRecentComics(latestComicNumber.get(), comic);
+
     }
 
     /**
@@ -74,8 +76,9 @@ public class WebcomicServiceImpl implements WebcomService {
             num--;
             var uri = webcomicUrl + "/" + num + "/" + webcomPrefix;
             var responseBody = httpClientExecutor.execute(Request.Get(URI.create(uri)));
-            var parsedComic = Stream.of(responseBody + ":URL:" + uri).map(comicParser).findFirst().get();
-            comics.add(parsedComic);
+            var parsedComic = Stream.of(responseBody + ":URL:" + uri).map(comicParser).findAny();
+            comics.add(parsedComic.get());
+
         }
 
         return comics;

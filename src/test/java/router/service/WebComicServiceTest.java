@@ -1,6 +1,8 @@
 package router.service;
 
 import de.seven.senders.challenge.client.HttpClientExecutor;
+import de.seven.senders.challenge.exception.ComicNumberException;
+import de.seven.senders.challenge.exception.ComicParseException;
 import de.seven.senders.challenge.model.Comic;
 import de.seven.senders.challenge.service.WebcomicServiceImpl;
 import org.apache.http.client.fluent.Request;
@@ -73,5 +75,44 @@ public class WebComicServiceTest {
                 () -> Assert.assertEquals("ImgURL is equal for entry 1", comic2.getPictureUrl(), "https://imgs.xkcd.com/comics/eradication.png"),
                 () -> Assert.assertEquals("ImgURL is equal for entry 2", comic2.getWebUrl(), "url/1/prefix")
         );
+    }
+
+    @Test(expected = ComicNumberException.class)
+    public void testNumberInvalidScenario() throws IOException {
+        String json = "{\n" +
+                "    \"month\": \"4\",\n" +
+                "    \"num\": 2,\n" +
+                "    \"link\": \"\",\n" +
+                "    \"year\": \"2021\",\n" +
+                "    \"news\": \"\",\n" +
+                "    \"safe_title\": \"Eradication\",\n" +
+                "    \"transcript\": \"\",\n" +
+                "    \"alt\": \"When you get to hell, tell smallpox we say hello.\",\n" +
+                "    \"img\": \"https://imgs.xkcd.com/comics/eradication.png\",\n" +
+                "    \"title\": \"Eradication\",\n" +
+                "    \"day\": \"9\"\n" +
+                "}";
+
+        Mockito.when(httpClientExecutor.execute(Mockito.any(Request.class))).thenReturn(json);
+
+        webcomicService.getComics();
+
+    }
+
+    @Test(expected = ComicParseException.class)
+    public void testParseComicException() throws IOException {
+        String json = "{\n" +
+                "    \"month\": \"4\",\n" +
+                "    \"num\": 2,\n" +
+                "    \"link\": \"\",\n" +
+                "    \"year\": \"2021\",\n" +
+                "    \"news\": \"\",\n" +
+                "    \"safe_title\": \"Eradication\"\n" +
+                "}";
+
+        Mockito.when(httpClientExecutor.execute(Mockito.any(Request.class))).thenReturn(json);
+
+        webcomicService.getComics();
+
     }
 }

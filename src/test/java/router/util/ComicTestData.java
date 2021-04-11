@@ -63,6 +63,5 @@ public class ComicTestData {
 
         return syndEntry;
 
-
     }
 }

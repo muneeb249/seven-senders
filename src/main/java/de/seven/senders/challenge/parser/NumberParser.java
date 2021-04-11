@@ -1,5 +1,6 @@
 package de.seven.senders.challenge.parser;
 
+import de.seven.senders.challenge.exception.ComicNumberException;
 import org.json.JSONObject;
 
 import java.util.function.Function;
@@ -28,7 +29,11 @@ public class NumberParser implements Function<String, Integer> {
      */
     @Override
     public Integer apply(String json) {
-        JSONObject obj = new JSONObject(json);
-        return obj.getInt("num");
+        try {
+            JSONObject obj = new JSONObject(json);
+            return obj.getInt("num");
+        } catch (Exception ex) {
+            throw new ComicNumberException(ex.getMessage());
+        }
     }
 }

@@ -3,6 +3,7 @@ package de.seven.senders.challenge.service;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.io.FeedException;
+import de.seven.senders.challenge.exception.ImageParseException;
 import de.seven.senders.challenge.model.Comic;
 import de.seven.senders.challenge.parser.ImageParser;
 import de.seven.senders.challenge.rssfeed.RssFeedExecutor;
