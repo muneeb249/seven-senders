@@ -11,4 +11,5 @@ public class SevenSendersApplication {
     public static void main(String [] args) {
         SpringApplication.run(SevenSendersApplication.class, args);
     }
+
 }
