@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: seven-senders-api
+  main:
+    banner-mode: "off"
+  mvc:
+    dispatch-options-request: true
+  jpa:
+    open-in-view: false
+server:
+  port: 8080
+webcomic:
+  service-uri: ${WEB_COMIC_URL:https://xkcd.com}
+  prefix: ${WEBCOMIC_PREFIX:info.0.json}
+  max-records: ${WEBCOMIC_MAX_RECORDS:10}
+pdl:
+  service-uri: ${PDL_URL:http://feeds.feedburner.com/PoorlyDrawnLines}
+  max-records: ${PDL_MAX_RECORDS:10}
