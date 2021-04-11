@@ -3,8 +3,8 @@ package de.seven.senders.challenge.service;
 import de.seven.senders.challenge.client.HttpClientExecutor;
 import de.seven.senders.challenge.model.Comic;
 import de.seven.senders.challenge.parser.ComicParser;
+import de.seven.senders.challenge.parser.NumberParser;
 import org.apache.http.client.fluent.Request;
-import org.json.JSONObject;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +31,7 @@ public class WebcomicServiceImpl implements WebcomService {
     private final String webcomPrefix;
     private final Integer maxRecords;
     private final ComicParser comicParser;
+    private final NumberParser numberParser;
 
 
     public WebcomicServiceImpl(
@@ -43,6 +44,7 @@ public class WebcomicServiceImpl implements WebcomService {
         this.webcomPrefix = environment.getProperty("webcomic.prefix");
         this.maxRecords = Integer.valueOf(Objects.requireNonNull(environment.getProperty("webcomic.max-records")));
         this.comicParser = new ComicParser();
+        this.numberParser = new NumberParser();
     }
 
     @Override
@@ -50,7 +52,7 @@ public class WebcomicServiceImpl implements WebcomService {
 
         var endpoint = URI.create(webcomicUrl + "/" + webcomPrefix);
         String responseBody = httpClientExecutor.execute(Request.Get(endpoint));
-        int latestComicNumber = getLatestComicNumber(responseBody);
+        int latestComicNumber = Stream.of(responseBody).map(numberParser).findFirst().get();
 
         var comic = Stream.of(responseBody + ":URL:" + endpoint.toString()).map(comicParser).findFirst().get();
         return fetchRecentComics(latestComicNumber, comic);
@@ -79,29 +81,4 @@ public class WebcomicServiceImpl implements WebcomService {
         return comics;
     }
 
-
-    /**
-     * The method will parse the response and extract the latest num from the json body. The json body looks like this
-     * <code>
-     *     {
-     *   "month": "4",
-     *   "num": 2448,
-     *   "link": "",
-     *   "year": "2021",
-     *   "news": "",
-     *   "safe_title": "Eradication",
-     *   "transcript": "",
-     *   "alt": "When you get to hell, tell smallpox we say hello.",
-     *   "img": "https://imgs.xkcd.com/comics/eradication.png",
-     *   "title": "Eradication",
-     *   "day": "9"
-     * }
-     *     <code/>
-     * @param json
-     * @return
-     */
-    private int getLatestComicNumber(String json) {
-        JSONObject obj = new JSONObject(json);
-        return obj.getInt("num");
-    }
 }
