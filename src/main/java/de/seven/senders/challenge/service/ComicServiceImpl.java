@@ -2,6 +2,7 @@ package de.seven.senders.challenge.service;
 
 import com.sun.syndication.io.FeedException;
 import de.seven.senders.challenge.model.Comic;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 

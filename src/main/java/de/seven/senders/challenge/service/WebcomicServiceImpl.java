@@ -2,6 +2,7 @@ package de.seven.senders.challenge.service;
 
 import de.seven.senders.challenge.client.HttpClientExecutor;
 import de.seven.senders.challenge.model.Comic;
+import de.seven.senders.challenge.parser.ComicParser;
 import org.apache.http.client.fluent.Request;
 import org.json.JSONObject;
 import org.springframework.core.env.Environment;
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * @author muneeb
@@ -28,6 +30,7 @@ public class WebcomicServiceImpl implements WebcomService {
     private final String webcomicUrl;
     private final String webcomPrefix;
     private final Integer maxRecords;
+    private final ComicParser comicParser;
 
 
     public WebcomicServiceImpl(
@@ -39,15 +42,18 @@ public class WebcomicServiceImpl implements WebcomService {
         this.webcomicUrl = environment.getProperty("webcomic.service-uri");
         this.webcomPrefix = environment.getProperty("webcomic.prefix");
         this.maxRecords = Integer.valueOf(Objects.requireNonNull(environment.getProperty("webcomic.max-records")));
+        this.comicParser = new ComicParser();
     }
 
     @Override
     public List<Comic> getComics() throws IOException {
+
         var endpoint = URI.create(webcomicUrl + "/" + webcomPrefix);
         String responseBody = httpClientExecutor.execute(Request.Get(endpoint));
         int latestComicNumber = getLatestComicNumber(responseBody);
 
-        return fetchRecentComics(latestComicNumber, Comic.parseJsonToComic(responseBody, endpoint.toString()));
+        var comic = Stream.of(responseBody + ":URL:" + endpoint.toString()).map(comicParser).findFirst().get();
+        return fetchRecentComics(latestComicNumber, comic);
     }
 
     /**
@@ -66,7 +72,7 @@ public class WebcomicServiceImpl implements WebcomService {
             num--;
             var uri = webcomicUrl + "/" + num + "/" + webcomPrefix;
             var responseBody = httpClientExecutor.execute(Request.Get(URI.create(uri)));
-            var parsedComic = Comic.parseJsonToComic(responseBody, uri);
+            var parsedComic = Stream.of(responseBody + ":URL:" + uri).map(comicParser).findFirst().get();
             comics.add(parsedComic);
         }
 
